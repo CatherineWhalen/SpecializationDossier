@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Specialization Dossier</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #1a1a1a;    
+            --text-color: #e0e0e0;  
+            --accent: #d32f2f;      
+            --spacing: 40px;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                linear-gradient(#222 1px, transparent 1px),
+                linear-gradient(90deg, #222 1px, transparent 1px);
+            background-size: 60px 60px;
+            color: var(--text-color);
+            font-family: 'Inter', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: var(--spacing);
+            line-height: 1.2;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr; 
+            gap: var(--spacing);
+            min-height: 100vh;
+        }
+
+        header {
+            grid-column: 1 / -1; 
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 15px; 
+            margin-bottom: 15px;  
+        }
+
+        h1 {
+            font-size: 5vw;
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin: 0;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            width: 0;
+            border-right: 4px solid var(--text-color);
+            animation: typing 3.5s steps(30, end) forwards, blink-white 0.8s infinite;
+        }
+
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-white { 50% { border-color: transparent; } }
+
+        .course-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 900;
+            display: inline-block;
+            margin-top: 10px; 
+            text-transform: uppercase;
+            font-size: 1.1rem; 
+            letter-spacing: 1px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards 4s;
+        }
+
+        .category-stack {
+            grid-column: 1; 
+            display: flex;
+            flex-direction: column;
+            gap: 25px; 
+            border-left: 2px solid var(--accent);
+            padding-left: 25px;
+        }
+
+        .section-header {
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+            font-size: 1.8vw;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            margin-bottom: 5px;
+            font-weight: 900;
+            white-space: nowrap;
+            line-height: 1.2;
+        }
+
+        .api-sub-header { 
+            color: var(--text-color);
+            font-family: 'Courier New', Courier, monospace;
+            text-transform: uppercase;
+            font-size: 1.1vw;
+            letter-spacing: 0.05em;
+            margin-bottom: 10px;
+            font-weight: 400;
+        }
+
+        details {
+            margin-bottom: 20px;
+        }
+
+        summary {
+            font-size: 1.8vw;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            color: var(--text-color);
+            cursor: pointer;
+            list-style: none;
+            outline: none;
+            transition: color 0.2s;
+        }
+
+        summary::-webkit-details-marker { display: none; }
+        summary:hover { color: var(--accent); }
+
+        .nav-sub-info {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.1rem; 
+            color: #bbb;
+            margin-top: 15px; 
+            margin-bottom: 15px;
+            line-height: 1.4;
+            padding-left: 15px;
+            border-left: 1px solid #333;
+            white-space: pre-wrap;
+        }
+
+        .interview-list {
+            list-style-type: disc;
+            margin: 0 0 20px 25px; 
+            padding: 0;
+            font-size: 0.9rem;
+        }
+
+        .interview-list li {
+            margin: 0 0 8px 0;
+            padding: 0;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .video-wrapper {
+            margin: 10px 0;
+            width: 100%;
+            border: 1px solid #333;
+            background: #000;
+            position: relative;
+            cursor: pointer;
+            aspect-ratio: 16 / 9;
+        }
+
+        video { display: block; width: 100%; height: 100%; filter: grayscale(100%); }
+
+        .custom-play-button {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 80px; height: 80px; background: rgba(0,0,0,0.6); border-radius: 50%;
+            border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center;
+            z-index: 10; transition: opacity 0.3s;
+        }
+
+        .custom-play-button::before {
+            content: ""; width: 0; height: 0; 
+            border-style: solid; border-width: 15px 0 15px 25px; 
+            border-color: transparent transparent transparent var(--accent);
+            margin-left: 5px;
+        }
+
+        .video-playing .custom-play-button { opacity: 0; pointer-events: none; }
+
+        .network-container {
+            grid-column: 2;
+            display: flex;
+            justify-content: flex-end; 
+            margin-right: 5%;
+            position: sticky;
+            top: 40px;
+            height: fit-content;
+            opacity: 0;
+            animation: fadeIn 1.5s ease forwards 4.5s;
+        }
+
+        .network-svg { width: 100%; max-width: 500px; height: auto; transition: opacity 0.5s; }
+        .node { fill: var(--accent); }
+        .line { stroke: #333; stroke-width: 1; fill: none; }
+        
+        .pulse-ring {
+            fill: none; stroke: var(--accent); stroke-width: 1.5;
+            transform-origin: center;
+            animation: ring-pulse 4s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+
+        .data-packet { fill: var(--text-color); animation: travel 4s infinite linear; }
+
+        .animation-paused .network-svg { opacity: 0.3; }
+        .animation-paused .pulse-ring,
+        .animation-paused .data-packet { animation-play-state: paused !important; }
+
+        @keyframes ring-pulse { 0% { transform: scale(0.1); opacity: 0; } 10% { opacity: 0.8; } 100% { transform: scale(1.5); opacity: 0; } }
+        @keyframes travel { 0% { offset-distance: 0%; opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        .linkedin-link {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.1rem; 
+            color: var(--accent);
+            text-decoration: none;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .team-credit {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.1rem; 
+            color: #bbb;
+            line-height: 1.4;
+            margin-top: 25px;
+            border-top: 1px solid #333;
+            padding-top: 20px;
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+        }
+
+        .apple-heart {
+            display: inline-block;
+            font-size: 2.2rem;
+            margin-left: 8px;
+            transform: translateY(6px);
+            animation: heartbeat 1.2s infinite ease-in-out;
+            transform-origin: center;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1) translateY(6px); }
+            15% { transform: scale(1.25) translateY(6px); }
+            30% { transform: scale(1) translateY(6px); }
+            45% { transform: scale(1.2) translateY(6px); }
+            70% { transform: scale(1) translateY(6px); }
+        }
+
+        footer {
+            grid-column: 1 / -1; margin-top: 60px; padding-top: 20px;
+            border-top: 1px solid #333; font-size: 0.75rem;
+            text-transform: uppercase; color: #666; text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 class="typing-text">Specialization Dossier</h1>
+        <a href="https://catalog.registrar.ucla.edu/course/2025/INFSTD270" target="_blank" class="course-link">
+            → INF STD 270: Systems and Infrastructures Course Description
+        </a>
+    </header>
+
+    <div class="category-stack">
+        <div class="section-header">Mapping the Ecological Landscape of LIS Work //</div>
+        
+        <details>
+            <summary>Project Description</summary>
+            <div class="nav-sub-info"><strong>Introduction</strong>
+
+Master of Library and Information Science (MLIS) students in University of California, Los Angeles (UCLA) Professor Noopur Raval’s Winter 2026 “Systems and Infrastructures” class (INF STD 270) were asked to create specialization dossiers mapping the socio-ecological landscapes of professional roles in Library and Information Science (LIS), with special attention to the impact of generative artificial intelligence (AI). This site’s contributors chose to investigate positions stewarding Indigenous archives, and interviewed Candy Navarrete, who performs two related jobs. Navarrete holds the positions of Repatriation Coordinator & Native Archives Specialist at the Autry Museum of the American West and Research Assistant for the Native and Indigenous Archives & Linked Data Project at the University of Maryland. The interview took place over Zoom on February 27, 2026, and was supplemented with extensive research on the sub-field. A full recording of the interview may be found below, along with detailed analyses of major insights and relevant resources.
+
+<strong>Overview</strong>
+
+The LIS professional role analyzed in this specialization dossier is that of Indigenous Archives Specialist working within a federally funded museum, university, or government agency that holds Native American collections. Since 1990, these institutions have been subject to legislation that requires the return of Indigenous North American human remains and funerary items. The Native American Graves Protection and Repatriation Act (NAGPRA) established a legal framework for repatriation, but required revisions in 2024 to enforce and accelerate compliance. The formal guidance for archival items beyond the funerary category, Protocols for Native American Archival Materials (PNAAM), was drafted in 2006 and endorsed by the Society of American Archivists (SAA) in 2018, with Principles in Indigenous Archival Repatriation (PINAR) adopted by the SAA in 2025. Repatriation work involves tasks such as researching descendants and tribal affiliations, preparing items for return, and documenting decisions. A significant amount of hidden care is also necessary in order to properly acknowledge historical injustices and build strong community relationships for the future. In addition to participating in the return of physical items that include archival materials, archivists are responsible for the ongoing ethical stewardship of records that represent (and misrepresent) Indigenous individuals and communities. There is a long history of non-consensual collection of data about Indigenous peoples. Archival material containing culturally sensitive information or restricted tribal knowledge can include (but is not limited to): archaeological and anthropological field notes, historical photographs, sound recordings, and oral histories. It is therefore imperative to consult with the descendants and communities of those represented on how to best describe and manage such holdings. This outreach also involves significant invisible labor in order to build trust in institutions through demonstrated reassurances that the relationships will be collaborative rather than extractive. Beyond attention to tribal relationships, professionals working with Indigenous archives cultivate a wide variety of stakeholders engaged with this material. These stakeholders may include institutional leaders and colleagues at all organizational levels, external researchers and students, collections and financial donors, and the broader public. Given the high demands for access to Indigenous archives, some specialists have begun to explore how the limited adoption of AI tools in closed systems with human oversight might introduce efficiencies in areas such as: transcribing sound recordings and oral histories, drafting descriptions to expedite processing backlogs, and analyzing metadata to identify areas for reparative description.</div>
+        </details>
+        
+        <details>
+            <summary>Interview with Candy Navarrete</summary>
+            <div class="nav-sub-info" style="border-left: none; padding-left: 0;">
+                <div class="video-wrapper" id="video-container" onclick="togglePlay()">
+                    <video id="dossier-video"><source src="CandyNavarreteInterview20260227.mp4" type="video/mp4"></video>
+                    <div class="custom-play-button"></div>
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>Typical Tasks</summary>
+            <div class="nav-sub-info">Work with Indigenous archives involves wearing several professional hats. Tasks common in many LIS roles include facilitating access, research, recordkeeping, and general collections care. Working with Native archives is different, however, in that it is often centered on critical community collaboration and frequently involves repatriation.
+
+<strong>Candy Navarrete describes the typical tasks associated with each of her positions as follows:</strong>
+
+<strong>Repatriation Coordinator & Native Archives Specialist, 
+Autry Museum of the American West</strong>
+
+<strong>Repatriation Coordinator:</strong> Corresponds with repatriation supervisor to track cases and ongoing work; conducts “archival repatriation,” navigating requests from tribal historic preservation officers
+
+<strong>Native Archives Specialist:</strong> Spends at least one day a week working in the physical archives; addresses research requests; flags culturally sensitive materials and communicates access restrictions to researchers accordingly
+
+<strong>Additional duties associated with above:</strong>
+
+<strong>Recordkeeping:</strong> Keeps records of communication with tribes for NAGPRA purposes and oversees associated scheduling and consultation; organizes past records, including earlier NAGPRA work, identifying systems for appropriately storing tribal files to accommodate ongoing repatriation efforts
+
+<strong>Administrative/Other:</strong> Misc. administrative tasks; assists colleagues with object handling and preparation, photography and archaeological reports as needed
+
+<strong>Research Assistant for the Native and Indigenous Archives & Linked Data Project, 
+University of Maryland</strong>
+
+Explores digital tools and consults on solutions to facilitate access to anthropological archival materials and information rich in Native American history
+
+<strong>Recent/current job postings associated with specializations working with Indigenous archives show varying degrees of overlap with Candy Navarrete’s stated responsibilities. Each of the following postings displays a similarly broad range of tasks at different levels of seniority:</strong>
+
+Research Assistant in Native & Indigenous Archives and Linked Data, 
+College of Information, University of Maryland
+<a href="https://blogs.iu.edu/dlis/2024/08/29/seeking-research-assistant-in-native-indigenous-archives-and-linked-data-college-of-information-university-of-maryland/" target="_blank" style="color: var(--accent);">https://blogs.iu.edu/dlis/2024/08/29/seeking-research-assistant-in-native-indigenous-archives-and-linked-data-college-of-information-university-of-maryland/</a>
+
+Post Doctoral Fellow, Transforming Indigenous Archival Search,
+College of Information Center for Archival Futures (CAFe) and Indigenous Futures Lab, University of Maryland
+<a href="https://www.ischools.org/post/post-doctoral-fellow-transforming-indigenous-archival-search" target="_blank" style="color: var(--accent);">https://www.ischools.org/post/post-doctoral-fellow-transforming-indigenous-archival-search</a>
+
+Tribal Archivist, Swinomish Indian Tribal Community
+<a href="https://www.swinomish-nsn.gov/human-resources/job-opening/tribal-archivist" target="_blank" style="color: var(--accent);">https://www.swinomish-nsn.gov/human-resources/job-opening/tribal-archivist</a>
+
+Repatriation, Archives and Records Director, Little Traverse Bay Bands of Odawa Indians
+<a href="https://ltbbodawa-nsn.gov/wp-content/uploads/2026/02/Repatriation-Archives-and-Records-Director-02.11.2026.pdf" target="_blank" style="color: var(--accent);">https://ltbbodawa-nsn.gov/wp-content/uploads/2026/02/Repatriation-Archives-and-Records-Director-02.11.2026.pdf</a>
+</div>
+    </details>
+
+        <details>
+            <summary>Professional Context</summary>
+            <div class="nav-sub-info">The Society of American Archivists (SAA) is the overarching organization that represents and supports specialists working with Indigenous archives through dedicated: groups, programs, training opportunities, and sessions at their annual meeting. The Association of Tribal Archives, Libraries, and Museums (ATALM) also holds an annual conference and operates a mentorship program. Together, these professional associations are the main sources for relevant job listings and news. While there is as of yet no dedicated journal for the sub-field, specialists are striving for greater visibility in standard publications, and the internet platform IndigenizeSNAC (Social Networks and Archival Contexts) aggregates web accessible publications through its news feed and bulletin. Due to deep histories of exploitation, specialists working with Indigenous archives must clearly communicate that their intentions and actions are collaborative rather than extractive.
+
+<strong>Associations:</strong>
+
+<strong>Society of American Archivists (SAA):</strong> <a href="https://www2.archivists.org/" target="_blank" style="color: var(--accent);">https://www2.archivists.org/</a>
+
+- Native American Archives Section (NAS):
+<a href="https://www2.archivists.org/groups/native-american-archives-section" target="_blank" style="color: var(--accent);">https://www2.archivists.org/groups/native-american-archives-section</a>
+- Archival Repatriation Committee:
+<a href="https://www2.archivists.org/governance-manual/archival-repatriation-committee" target="_blank" style="color: var(--accent);">https://www2.archivists.org/governance-manual/archival-repatriation-committee</a>
+- Indigenous Archival Training Program:
+<a href="https://www2.archivists.org/recipients/2024/archival-innovator-award-indigenizing-archival-training-program#:~:text=The%20Indigenous%20Archival%20Training%20Program,in%20the%20fall%20of%202023" target="_blank" style="color: var(--accent);">https://www2.archivists.org/recipients/2024/archival-innovator-award-indigenizing-archival-training-program</a>
+
+<strong>Association of Tribal Archives, Libraries, & Museums (ATALM):</strong> <a href="https://www.atalm.org/" target="_blank" style="color: var(--accent);">https://www.atalm.org/</a>
+
+- Mentorship Program: <a href="https://www.atalm.org/mentorship-program/" target="_blank" style="color: var(--accent);">https://www.atalm.org/mentorship-program/</a>
+
+<strong>Conferences:</strong>
+
+- Society of American Archivists Annual Meeting: <a href="https://www2.archivists.org/conference" target="_blank" style="color: var(--accent);">https://www2.archivists.org/conference</a>
+
+- Association of Tribal Archives, Libraries, and Museums (ATALM) Annual Conference: 
+<a href="https://www.atalm.org/conference-2026/" target="_blank" style="color: var(--accent);">https://www.atalm.org/conference-2026/</a>
+
+- Association of Indian Affairs Annual Repatriation Conference:
+<a href="https://www.indian-affairs.org/11thannualrepatriationconference.html" target="_blank" style="color: var(--accent);">https://www.indian-affairs.org/11thannualrepatriationconference.html</a>
+
+<strong>Journals:</strong> 
+
+Relevant articles can be found in journals for archivists and conference proceedings (see Annotated Bibliography and Additional Sources below), but there are no periodicals devoted to the subject yet.
+
+<strong>Candy Navarrete:</strong> “I know that I'm mentioned in articles and in academic research papers...[for example] what is an indigenous researcher working in a certain field, what is your experience or the work that you're doing, and they give you a chapter or a section to speak about it. We're really trying to get more Indigenous scholarship in the standard journals that are out there.”
+
+<strong>Job Postings:</strong> 
+
+Besides specific institutions and repositories with holdings of indigenous archival material, the following sites aggregate relevant job advertisements:
+
+- Association of Tribal Archives, Libraries, & Museums (ATALM) - Find a Job: <a href="https://www.atalm.org/job-opportunities/" target="_blank" style="color: var(--accent);">https://www.atalm.org/job-opportunities/</a>
+
+- Society of American Archivists Careers Center: <a href="https://careers.archivists.org/" target="_blank" style="color: var(--accent);">https://careers.archivists.org/</a>
+
+- National Association of Tribal Historic Preservation Officers (NATHPO): <a href="https://www.nathpo.org/community-job-postings/" target="_blank" style="color: var(--accent);">https://www.nathpo.org/community-job-postings/</a>
+
+- Archives Gig: <a href="https://archivesgig.com/" target="_blank" style="color: var(--accent);">https://archivesgig.com/</a>
+
+<strong>Other Platforms:</strong>
+
+- Society of American Archivists: Native American Archives Section Blog: <a href="https://saanativearchives.home.blog/" target="_blank" style="color: var(--accent);">https://saanativearchives.home.blog/</a>
+
+- Association of Tribal Archives, Libraries, & Museums (ATALM) - Mailing List: <a href="https://www.atalm.org/about-atalm/mailing-list/" target="_blank" style="color: var(--accent);">https://www.atalm.org/about-atalm/mailing-list/</a>
+
+- Indigenize SNAC, News Bulletin: <a href="https://snac.ischool.umd.edu/news/" target="_blank" style="color: var(--accent);">https://snac.ischool.umd.edu/news/</a>
+
+- In the Field: The ACA Blog (Association of Canadian Archivists): <a href="https://archivists.ca/Blog/13418228" target="_blank" style="color: var(--accent);">https://archivists.ca/Blog/13418228</a>
+
+<strong>Social and Collaborative Practices:</strong> 
+
+Promoting junior and mid-career participants in the field through networking is vital, but it needs to be in the context of genuine collaboration rather than exploitative self-interest.
+
+<strong>Candy Navarrete:</strong> “My boss was great...(making introductions at conferences with her peers and her mentors)...[But] I think sometimes people go too hard networking...and you can push people off...I feel like sometimes people approach us with a lot of like, can you get me this? Can you get me that? But it's not about what we can get you. It's about how we can work together. And what we all can balance and what we all have to offer. And it's not coming in from a colonial lens of like, I need to do this networking to get to this, and then to get to this, because it becomes very extractive.”</div>
+        </details>
+
+        <details>
+            <summary>Job Market Outlook</summary>
+            <div class="nav-sub-info">As noted in the “Overview” section repatriation work is concentrated in federally funded non-profit institutions due to NAGPRA. As a result of recent changes in the political landscape, these institutions are currently experiencing damaging cuts to their budgets, causing an already small job market in specializations that work with Indigenous materials to shrink. Prior to the implementation of significant federal budget cuts in 2025, funding and, consequently, jobs were more available.
+
+Some private museums and universities that are not subject to NAGPRA compliance have also chosen to hire specialists to manage and repatriate Native collections, however, positions are few and far between. Grant funded positions also exist but they are generally contractual, with limited terms.
+
+<strong>Candy Navarrete:</strong>
+
+“If you had asked me prior to last year, I would have said it was growing exponentially. There was a lot of opportunity for those of us with Native Indigenous archival expertise, but with the way that things have changed in...funding politically, it's really affected...job availability.”
+
+“While I see a lot of archivists jumping into [repatriation] roles, I've seen them struggle and I worry about the harm that's being caused and the delay in NAGPRA work because of that gap in knowledge.”
+
+“There are still a lot of positions available, but it's finding the right people to fill those roles. Not everyone can do it. And it's not just the academic, it's also the cultural protocols that you need to know; the relationship building...so there's a lot more than just being academically right for a bit for a position.”
+
+“A lot of the people that I know have not only their full-time jobs, but they do have a side job that they do...so that's how we're making ends meet. It's a passion. We love the work we're doing, but we also are realists and understand that we need to supplement our income.”</div>
+        </details>
+
+        <details>
+            <summary>Labor Trends</summary>
+            <div class="nav-sub-info">Beyond the proliferation of short-term grant-funded contracts to address NAGPRA backlogs (rather than long-term investment in repatriation), Indigenous archives specialists face serious challenges coping with the emotional impact of distressing content in the archives as well as the hidden labor of service and care work to sustain community relationships and promote the profession. However, some of these challenges can be rewarding and even deeply meaningful, and professionals in these roles are committed to uplifting their colleagues and approach remuneration as a justice issue.
+
+<strong>Candy Navarrete:</strong>
+
+“The emotional impact that reading through archives has...having to read some of the things that I do have to read through in my research, it's really challenging and it does get to me. I think I'm better at coping with it now.”
+
+“We do a lot of mentoring outside of our jobs...the work that I'm doing with SAA...speaking engagements...relationship, building...being there for the powwow on the weekend...our jobs don't operate on a nine to five basis.”
+
+“I think in our field...[this invisible labor is one of] the most challenging aspects of the work that we do, and it's something that I really enjoy learning about.”
+
+“[At the Autry] we're never going to bring anyone in on an unpaid internship...that's part of my (me and my team's) ethos...that’s something I can say is a good trend I’m seeing right now...we’re going to pay you a fair wage and we’re going to make sure you get paid for your internship.”</div>
+        </details>
+
+        <details>
+            <summary>Training Agenda</summary>
+            <div class="nav-sub-info">Standard MLIS degrees, while helpful, do not include coursework that is directly relevant to working with Native archives. Those aspiring to such work are well advised to seek out specific coursework in departments or institutions beyond their own. Practical, hands-on experience is key.
+
+<strong>Of her educational experience at UCLA and beyond, Candy Navarrete says:</strong>
+
+“I felt that my education at UCLA's MLIS program was a little too theoretical...because they didn't have anything Indigenous-centric, not even classes on cultural protocols; I had to go and seek that out for myself.” “I basically had to build on what I was learning in archives, go to the American Indian school and take...a graduate level course on...Native American research practices, for example.” “[I] kind of agitated the whole time that I was there and I created what I wanted to create for myself.”
+
+“I think what UCLA program did well is getting you used to working with groups of people, different types of people. And I think that's really important because it's a lot of inter-departmental work, you're going to be working with people you’ve never even met before, but they're in the same institution that you're at.”
+
+“Learning to relationship build...I see a lot of...newer generations having issues with communication and there's that barrier. And I talk to a lot of elders [who say they] don't [even] get to talk to...people anymore.”
+
+“Find something that you're passionate about and...find that training that you need and go out and get it because you probably won't get it in the traditional MLIS program at any school, to be honest. Because it's more...the practical, hands-on.”
+
+“I'm now able to have an ethical framework from an Indigenous perspective and finding it's hard to find those resources, but they're out there...and I think anything that I learned that's Indigenous-specific, it's applicable to any community...because every community, I feel at this point is really vulnerable.”</div>
+        </details>
+
+        <details>
+            <summary>Technical Skills Snapshot</summary>
+            <div class="nav-sub-info">Entry level hires should be proficient with general software systems (including generative artificial intelligence tools) and technical standards specific to libraries and archives, as well as with operating the equipment used in this environment, but still require analog skills in order to be able to access the content of handwritten documents:
+
+- Reading and analyzing contemporary and historical handwriting.
+- Archival processing: digital archiving systems, management software, and standards such as DACS or EAD.
+- Information searching and evaluation (library and internet).
+- Digitization methods and guidelines.
+- Collections databases and metadata.
+- Computer processing: eg. Microsoft Office.
+- Team collaboration platforms (eg. Microsoft Teams).
+- Web platforms: Wikidata, Wikipedia, Wikimedia, SNAC, Bionomia, etc.
+- Operating equipment: scanners, digital cameras, audio recorders, printers, various computers, and projectors.
+
+<strong>Candy Navarrete works with a lot of students and mentees, and has specific advice on priority hard skills:</strong>
+
+“I think if anything right now...understanding the technology aspect of our information profession is really worth it...and how it's going to affect our careers going forward.”
+
+“Having your basic archival understanding is a good place to start. And then getting the hands on [experience]. I think that's what's really important: processing a collection, from start to finish—cataloging it.”</div>
+        </details>
+
+        <details>
+            <summary>Artificial Intelligence (AI) Impacts</summary>
+            <div class="nav-sub-info">The advent of artificial intelligence (AI) in the context of Indigenous materials is simultaneously problematic and promising. Sensitive materials must be closely guarded to ensure that Native rights are protected. Large Language Models (LLMs) are already scraping Native knowledge without permission and are simultaneously being trained on insensitive historic epistemic tools and legacy data. Collections processing (metadata entry), transcription and search are some areas where AI may offer effective solutions. Some scholars believe that AI may even have capabilities to assist with reparative cataloging.
+
+<strong>Candy Navarrete highlights both complications of working with artificial intelligence in the context of sensitive tribal knowledge and relations, as well as some potential useful applications in the sub-field:</strong>
+
+“A lot of elders...were very nervous about AI...and no one really had an answer for them. Even people who are experts of metadata didn't really understand how AI was going to affect...Indigenous Native communities.”
+
+“There are a lot of cultural restrictions that I would flag. You know, we're thinking about AI from an Indigenous perspective...we're thinking about copyright; I[ntellectual] P[roperty].”
+
+“Part of the work that we're doing in Meta is...using it for transcription...We cannot put anything that has any mention of native communities into ChatGPT, because we don't know how that material is being used and we're not even consulting with tribal communities to see if that's what they wish to do first...We're looking at closed AI systems...for basic metadata...because processing collections is one of the biggest challenges...[but] we're not ready to start putting actual materials of vulnerable communities into the systems to do that work, even if it's a closed-based system.”</div>
+        </details>
+
+        <details>
+            <summary>Annotated Bibliography</summary>
+            <div class="nav-sub-info">Journal articles, conference proceedings, and professional guidelines provide crucial insights for understanding the role of Indigenous archives specialist because they reveal how best practices for restitution, reparative cataloguing, and metadata analytics have been discussed and formalized in the field.
+
+<strong>Christen, Kimberly. "Opening Archives: Respectful Repatriation." The American Archivist 74, no. 1 (2011): 185–210.</strong>
+Kimberly Christen is a Professor and Vice President for Research at Washington State University. She is known for her work on digital heritage and is founder of Mukurtu CMS (<a href="https://mukurtu.org/" target="_blank" style="color: var(--accent);">https://mukurtu.org/</a>) and Sustainable Heritage Network (<a href="https://sustainableheritagenetwork.org/" target="_blank" style="color: var(--accent);">https://sustainableheritagenetwork.org/</a>) and co-founder of Local Contexts (<a href="https://localcontexts.org/" target="_blank" style="color: var(--accent);">https://localcontexts.org/</a>). This article targets an audience of archivists and museum professionals and focuses on digital repatriation and reciprocal curation. Christen argues that digital technologies offer new possibilities for "respectful repatriation" if collaborative efforts between archivists and Indigenous community members are prioritized in their use. She uses case studies to show how tribal metadata and other content can be combined with archival records in novel categorization systems aimed at protecting Indigenous sensitivities to universal benefit.
+
+<strong>Montenegro, María. "Subverting the Universality of Metadata Standards: The TK Labels as a Tool to Promote Indigenous Data Sovereignty." Journal of Documentation 75, no. 4 (2019): 731–749.</strong>
+María Montenegro is an Assistant Professor at University of California, Irvine. Her work is largely focused on Indigenous studies. This article discusses Traditional Knowledge (TK) Labels used to provide protocols for the use of indigenous materials held by institutions. Montenegro argues that "universal" standards like Dublin Core (DC) are not neutral but encode Western cultural patterns. She analyzes how DC metadata fields like "rights" and "creator" fail to account for Indigenous knowledge and proposes “anticolonial metadata tools” such as TK Labels to “promote Indigenous data sovereignty.”
+
+<strong>Osti, Giulia, and Elizabeth Russey Roke. “Collaborating for Change? Assessing Metadata Inclusivity in Digital Collections with Large Language Models (LLMS).” 2024 IEEE International Conference on Big Data (BigData), Washington, DC, USA, 2024, pp. 2479-2488. doi: 10.1109/BigData62323.2024.10825858.</strong>
+This project was a collaboration between Elizabeth Russey Roke, Archival Program Technology Manager at Emory University, and Giulia Osti, a University College Dublin (Ireland) doctoral student who went on to complete a PhD on ethical heritage data practices and artificial intelligence (AI) systems in December 2025. Seeking beneficial applications for AI tools to support reparative archival descriptive practices, they investigated how best to integrate computational methods into descriptive cataloging workflows, and demonstrated the capacity of Language Learning Models (LLMs) to identify: gaps, harmful language, and latent contextual elements. Notably, they conducted extensive testing of AI prompts in advance of applying it to the data set, and worked in a closed system. Although the material analyzed was from a community archive rather than a specifically Indigenous archive, it serves as a model for ethical AI approaches to vulnerable communities more broadly.
+
+<strong>Society of American Archivists (SAA). "Principles in Indigenous Archival Repatriation (PINAR)." Approved/endorsed August 2025.</strong>
+<a href="https://www2.archivists.org/standards/principles-in-indigenous-archival-repatriation-pinar" target="_blank" style="color: var(--accent);">https://www2.archivists.org/standards/principles-in-indigenous-archival-repatriation-pinar</a>.
+Written by members of SAA's Archival Repatriation Committee, these principles were approved as a professional standard by SAA in 2025. In 2021, SAA's Native American Archives (NAAS) Section initiated the process to center repatriation and ethical returns in the work of archivists and institutions with holdings pertaining to Indigenous peoples. In addition to reviewing the literature, throughout 2022 and 2023, the Committee conducted listening sessions with a range of individuals and project teams involved in archival repatriation work. The resulting draft was reviewed by more than 30 archivists, leaders, educators, and allied practitioners from a range of institutions, and was shared at the annual meetings of SAA and the Association for Tribal Archives, Libraries, and Museums (ATALM). This document is the culmination of a much longer historical effort (see below).
+
+<strong>First Archivists Circle. "Protocols for Native American Archival Materials." April 9, 2007.</strong> <a href="http://www2.nau.edu/libnap-p/protocols.html" target="_blank" style="color: var(--accent);">http://www2.nau.edu/libnap-p/protocols.html</a>.</strong>
+These protocols for best professional practices for culturally responsive care and use of American Indian archival material held by non-tribal organizations were drafted in 2006 by the First Archivist Circle, following a convening at Northern Arizona University Cline Library in Flagstaff, Arizona, of a group of nineteen Native American and non-Native American archivists, librarians, museum curators, historians, and anthropologists. The group included representatives from Australian Aboriginal communities, and was informed by Australia's Aboriginal and Torres Strait Islander Protocols for Libraries, Archives, and Information Services. The Protocols provide complementary guidance to the 1990 Native American Graves Protection and Repatriation Act (NAGPRA), which does not cover the repatriation of archival materials that are not human remains or funerary items. Initially rejected in 2008 by the Society of American Archivists (SAA) Task Force to Review the Protocols for Native American Archival Materials (PNAAM), SAA endorsed PNAAM as an external standard in 2018. PNAAM is a broad foundational document that provided the framework for the development of the SAA Principles in Indigenous Archival Repatriation (PINAR) standard (see above).</div>
+        </details>
+
+        <details>
+            <summary>Additional Resources</summary>
+            <div class="nav-sub-info">Additional sources encountered during this project are listed here. The search bar below may be used to retrieve Indigenous archival material from the Digital Public Library of America.
+
+<strong>American Library Association. “Revised Competencies for Cataloging & Metadata Professional Librarians.” Released January 11, 2024.</strong> <a href="https://www.ala.org/news/2024/01/revised-competencies-cataloging-metadata-professional-librarians" target="_blank" style="color: var(--accent);">https://www.ala.org/news/2024/01/revised-competencies-cataloging-metadata-professional-librarians</a>.
+
+<strong>Anderson, Jane. "Indigenous Knowledge, Intellectual Property, Libraries and Archives: Crises of Access, Control and Future Use." Australian Academic & Research Libraries 36, no. 2 (2005): 83–94.</strong>
+
+<strong>Christen, Kimberly. “Tribal Archives, Traditional Knowledge, and Local Contexts: Why the ‘s’ Matters.” Journal of Western Archives 6:1 (2015): 1–18.</strong> <a href="https://doi.org/10.26077/78d5-47cf" target="_blank" style="color: var(--accent);">https://doi.org/10.26077/78d5-47cf</a>.
+
+<strong>First Nations Information Governance Centre. "The First Nations Principles of OCAP®." Accessed March 12, 2026.</strong> <a href="https://fnigc.ca/ocap-training/" target="_blank" style="color: var(--accent);">https://fnigc.ca/ocap-training/</a>.
+
+<strong>Littletree, Sandra, and Cheryl A. Metoyer. "Knowledge Organization from an Indigenous Perspective: The Mashantucket Pequot Thesaurus of American Indian Terminology Project." Cataloging & Classification Quarterly 53, no. 5-6 (2015): 640–657.</strong>
+
+<strong>Local Contexts. "Traditional Knowledge (TK) Labels." Accessed March 12, 2026.</strong> <a href="https://localcontexts.org/labels/traditional-knowledge-labels/" target="_blank" style="color: var(--accent);">https://localcontexts.org/labels/traditional-knowledge-labels/</a>.
+
+<strong>Underhill, Karen J. “Protocols for Native American Archival Materials.” RBM: A Journal of Rare Books, Manuscripts, and Cultural Heritage 7:2 (2006): 134–145.</strong> <a href="https://rbm.acrl.org/index.php/rbm/article/view/267" target="_blank" style="color: var(--accent);">https://rbm.acrl.org/index.php/rbm/article/view/267</a>.
+
+<strong>Wikipedia. "WikiProject Indigenous peoples of North America." Accessed March 12, 2026.</strong> <a href="https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Indigenous_peoples_of_North_America" target="_blank" style="color: var(--accent);">https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Indigenous_peoples_of_North_America</a>.</div>
+        </details>
+
+        <div class="archive-feed-wrapper" style="margin-top: 40px;">
+            <div class="section-header">Live Archive Feed //</div>
+            <div class="api-sub-header">Search Digital Public Library of America for Indigenous Materials</div>
+            <input type="text" id="dpla-search" style="background:rgba(0,0,0,0.3); border:1px solid #333; border-bottom:2px solid var(--accent); color:white; width:100%; box-sizing: border-box; padding:10px;" placeholder="Type and press Enter (e.g., 'Tongva')...">
+            <div id="search-results" style="margin-top: 20px; max-height: 400px; overflow-y: auto; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem;"></div>
+        </div>
+
+        <div class="contributor-section" style="margin-top: 40px;">
+            <div class="section-header">Contributors //</div>
+            <div style="margin-top: 25px; margin-bottom: 20px;">
+                <div style="font-size: 1.5vw; font-weight: 700; text-transform: uppercase;">Rosie Mills-Helterbran</div>
+                <a href="https://linkedin.com/in/rosie-mills-helterbran-1110555a" target="_blank" class="linkedin-link">[ LinkedIn Profile ]</a>
+            </div>
+            <div>
+                <div style="font-size: 1.5vw; font-weight: 700; text-transform: uppercase;">Catherine Whalen</div>
+                <a href="https://www.linkedin.com/in/catherineannwhalen/" target="_blank" class="linkedin-link">[ LinkedIn Profile ]</a>
+            </div>
+            <div class="team-credit">
+                Rosie and Cat evenly split contributions to the interview with Candy Navarrete and resultant analysis, both in asking questions and breaking down answers. Both conducted further research and identified additional resources. Rosie took the lead on the Annotated Bibliography, with contributions from Cat. Cat took the lead on web design, with contributions from Rosie. What a team! <span class="apple-heart">❤️</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="network-container" id="network-visual-container">
+        <svg class="network-svg" viewBox="0 0 200 200">
+            <path class="line" d="M100 100 L180 20" /><path class="line" d="M100 100 L190 140" />
+            <path class="line" d="M100 100 L20 170" /><path class="line" d="M100 100 L10 40" />
+            <path class="line" d="M180 20 L190 140" /><path class="line" d="M10 40 L20 170" />
+            <circle class="pulse-ring ring-1" cx="100" cy="100" r="50" />
+            <circle class="pulse-ring ring-2" cx="100" cy="100" r="50" />
+            <circle class="pulse-ring ring-3" cx="100" cy="100" r="50" />
+            <circle class="node" cx="100" cy="100" r="8" />
+            <circle class="node" cx="180" cy="20" r="4" /><circle class="node" cx="190" cy="140" r="4" />
+            <circle class="node" cx="20" cy="170" r="4" /><circle class="node" cx="10" cy="40" r="4" />
+            <circle r="2.5" class="data-packet" style="offset-path: path('M100 100 L180 20');" />
+            <circle r="2.5" class="data-packet" style="offset-path: path('M100 100 L20 170'); animation-delay: 1.5s;" />
+            <circle r="2.5" class="data-packet" style="offset-path: path('M190 140 L180 20'); animation-delay: 2.2s;" />
+            <circle r="2.5" class="data-packet" style="offset-path: path('M100 100 L10 40'); animation-delay: 0.8s;" />
+        </svg>
+    </div>
+
+    <footer>
+        Authorized Access // PROJECT: INF_STD_270_SYSTEMS_AND_INFRASTRUCTURES // UCLA_WINTER_2026
+    </footer>
+
+    <script>
+        const video = document.getElementById('dossier-video');
+        const videoContainer = document.getElementById('video-container');
+        const networkVisual = document.getElementById('network-visual-container');
+
+        function togglePlay() {
+            if (video.paused) { video.play(); } else { video.pause(); }
+        }
+
+        video.onplay = function() {
+            videoContainer.classList.add('video-playing');
+            networkVisual.classList.add('animation-paused');
+        };
+
+        video.onpause = function() {
+            videoContainer.classList.remove('video-playing');
+            networkVisual.classList.remove('animation-paused');
+        };
+
+        const searchInput = document.getElementById('dpla-search');
+        const resultsContainer = document.getElementById('search-results');
+        const API_KEY = "bd08103c812480678d85f6755498829d"; 
+
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                performSearch(this.value);
+            }
+        });
+
+        async function performSearch(query) {
+            resultsContainer.innerHTML = "<div style='color:var(--accent)'>[ ACCESSING ARCHIVES... ]</div>";
+            const url = `https://api.dp.la/v2/items?q=${query}+AND+Indigenous&api_key=${API_KEY}`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.docs && data.docs.length > 0) {
+                    resultsContainer.innerHTML = data.docs.map(doc => `
+                        <div style="margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">
+                            <div style="color: #fff; font-weight: bold;">${doc.sourceResource.title}</div>
+                            <div style="color: #888; font-size: 0.8rem;">${doc.sourceResource.creator || 'Unknown Creator'}</div>
+                            <a href="https://dp.la/item/${doc.id}" target="_blank" style="color: var(--accent); text-decoration: none;">→ View Record</a>
+                        </div>
+                    `).join('');
+                } else {
+                    resultsContainer.innerHTML = "<div style='color: #666;'>No matching records found in the DPLA infrastructure.</div>";
+                }
+            } catch (error) {
+                resultsContainer.innerHTML = "<div style='color: var(--accent);'>CONNECTION ERROR: Check Network.</div>";
+            }
+        }
+    </script>
+</body>
+</html>
