@@ -516,7 +516,7 @@ These protocols for best professional practices for culturally responsive care a
 
         <div class="archive-feed-wrapper" style="margin-top: 40px;">
             <div class="section-header">Live Archive Feed //</div>
-            <div class="api-sub-header">Search Digital Public Library of America for Indigenous Materials</div>
+            <div class="api-sub-header">Search Digital Public Library of America for Indigenous Materials<br/>(opens new window with JSON API results)</div>
             <input type="text" id="dpla-search" style="background:rgba(0,0,0,0.3); border:1px solid #333; border-bottom:2px solid var(--accent); color:white; width:100%; box-sizing: border-box; padding:10px;" placeholder="Type and press Enter (e.g., 'Tongva')...">
             <div id="search-results" style="margin-top: 20px; max-height: 400px; overflow-y: auto; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem;"></div>
         </div>
@@ -591,23 +591,7 @@ These protocols for best professional practices for culturally responsive care a
         async function performSearch(query) {
             resultsContainer.innerHTML = "<div style='color:var(--accent)'>[ ACCESSING ARCHIVES... ]</div>";
             const url = `https://api.dp.la/v2/items?q=${query}+AND+Indigenous&api_key=${API_KEY}`;
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                if (data.docs && data.docs.length > 0) {
-                    resultsContainer.innerHTML = data.docs.map(doc => `
-                        <div style="margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">
-                            <div style="color: #fff; font-weight: bold;">${doc.sourceResource.title}</div>
-                            <div style="color: #888; font-size: 0.8rem;">${doc.sourceResource.creator || 'Unknown Creator'}</div>
-                            <a href="https://dp.la/item/${doc.id}" target="_blank" style="color: var(--accent); text-decoration: none;">→ View Record</a>
-                        </div>
-                    `).join('');
-                } else {
-                    resultsContainer.innerHTML = "<div style='color: #666;'>No matching records found in the DPLA infrastructure.</div>";
-                }
-            } catch (error) {
-                resultsContainer.innerHTML = "<div style='color: var(--accent);'>CONNECTION ERROR: Check Network.</div>";
-            }
+            window.open(url, '_blank', 'location=no,height=600,width=800,scrollbars=yes,status=no,resizable=yes');
         }
     </script>
 </body>
